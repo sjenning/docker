@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bufio"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -188,4 +189,14 @@ func copyToFile(outfile string, r io.Reader) error {
 	}
 
 	return nil
+}
+
+func readInput(in io.Reader, out io.Writer) string {
+	reader := bufio.NewReader(in)
+	line, _, err := reader.ReadLine()
+	if err != nil {
+		fmt.Fprintln(out, err.Error())
+		os.Exit(1)
+	}
+	return string(line)
 }
