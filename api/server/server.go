@@ -47,6 +47,7 @@ type Server struct {
 	routers       []router.Router
 	authZPlugins  []authorization.Plugin
 	routerSwapper *routerSwapper
+	daemon        *daemon.Daemon
 }
 
 // Addr contains string representation of address and its protocol (tcp, unix...).
@@ -79,6 +80,11 @@ func (s *Server) Close() {
 			logrus.Error(err)
 		}
 	}
+}
+
+// SetDaemon initializes the daemon field
+func (s *Server) SetDaemon(daemon *daemon.Daemon) {
+	s.daemon = daemon
 }
 
 // serveAPI loops through all initialized servers and spawns goroutine
