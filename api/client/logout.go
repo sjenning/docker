@@ -14,14 +14,26 @@ import (
 //
 // Usage: docker logout [SERVER]
 func (cli *DockerCli) CmdLogout(args ...string) error {
-	cmd := Cli.Subcmd("logout", []string{"[SERVER]"}, Cli.DockerCommands["logout"].Description+".\nIf no server is specified \""+registry.IndexServer+"\" is the default.", true)
+	cmd := Cli.Subcmd("logout", []string{"[SERVER]"}, Cli.DockerCommands["logout"].Description+".\nIf no server is specified, the default is specified by the daemon.", true)
 	cmd.Require(flag.Max, 1)
 
 	cmd.ParseFlags(args, true)
 
-	serverAddress := registry.IndexServer
+	// ON THE CLI WE DON'T HAVE THE DEFAULTREGISTRIES LIST
+	// SO THIS IS JUST "docker.io"
+	serverAddress := registry.IndexServerName()
+	if info, err := cli.client.Info(); err != nil {
+		fmt.Fprintf(cli.out, "Warning: failed to get default registry endpoint from daemon (%v). Using system default: %s\n", err, serverAddress)
+	} else {
+		serverAddress = info.IndexServerName
+	}
 	if len(cmd.Args()) > 0 {
 		serverAddress = cmd.Arg(0)
+	}
+
+	// just for docker.io
+	if serverAddress == registry.IndexName {
+		serverAddress = registry.IndexServer
 	}
 
 	if _, ok := cli.configFile.AuthConfigs[serverAddress]; !ok {
