@@ -784,7 +784,7 @@ func (container *Container) SecretMount() (*execdriver.Mount, error) {
 		return nil, fmt.Errorf("RemoveSecretsPath failed: %v", err)
 	}
 
-	if err := os.MkdirAll(secretsPath, 0700); err != nil {
+	if err := os.MkdirAll(secretsPath, 0755); err != nil {
 		return nil, fmt.Errorf("MakeDirSecretsPath failed: %v", err)
 	}
 
